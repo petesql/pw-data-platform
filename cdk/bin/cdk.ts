@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import { App } from '@aws-cdk/core';
-import { CdkStack, Ec2dbStack } from '../lib/index';
+import { CdkStack, Ec2dbStack, S3Stack } from '../lib/index';
 
 const app = new App();
 const peerCidrIp: string = app.node.tryGetContext('peerIp');
@@ -33,3 +33,4 @@ const stackProps = {
 
 new CdkStack(app, 'CdkStack', { });
 new Ec2dbStack(app, 'ec2Stack', peerCidrIp, keyName, stackProps);
+new S3Stack(app, 's3Stack', stackProps);

@@ -1,6 +1,7 @@
 import { Stack, StackProps, Construct } from '@aws-cdk/core';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Ec2dbInstance } from './ec2-db-instance-stack';
+import { defaultS3Bucket } from './s3-bucket-stack';
 
 export class CdkStack extends Stack {
     createVpc(scope: Construct) {
@@ -34,5 +35,14 @@ export class Ec2dbStack extends CdkStack {
         peerCidrIp,
         this.availabilityZones[0],
         keyName);
+  }
+}
+
+export class S3Stack extends CdkStack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
+      super(scope, id, props);
+
+      new defaultS3Bucket(this, 'bucketNamePete', 'bucketnameactualpete')
+
   }
 }
