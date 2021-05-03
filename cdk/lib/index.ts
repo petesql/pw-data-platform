@@ -2,6 +2,7 @@ import { Stack, StackProps, Construct } from '@aws-cdk/core';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Ec2dbInstance } from './ec2-db-instance-stack';
 import { defaultS3Bucket } from './s3-bucket-stack';
+import { iamUser } from './iam-stack';
 
 export class BaseInfraCDKStack extends Stack {
     createVpc(scope: Construct) {
@@ -26,6 +27,15 @@ export class BaseInfraCDKStack extends Stack {
     super(scope, id, props);    
   }
 }
+
+export class iamStack extends BaseInfraCDKStack {
+  constructor(scope: Construct, id: string, props?: StackProps ) {
+    super(scope, id, props);
+    // create a new iam user
+    new iamUser(this, 'd', 'pw-dp-iamuser1');
+  }
+}
+
 
 export class Ec2dbStack extends BaseInfraCDKStack {
   constructor(scope: Construct, id: string, peerCidrIp: string, keyName: string, props?: StackProps) {
