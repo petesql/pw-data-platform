@@ -1,11 +1,36 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
-import { App } from '@aws-cdk/core';
+import { App, Construct, Stack } from '@aws-cdk/core';
 import { BaseInfraCDKStack, Ec2dbStack, S3Stack, iamStack } from '../lib/index';
 
+interface EnvProps {
+    prod: boolean;
+  }
+
+const stackProps = {
+    env: {
+        account: process.env.CDK_DEFAULT_ACCOUNT,
+        region: process.env.CDK_DEFAULT_REGION
+    }
+}
+
+class IAMStack extends Stack {}
+
+class myApp extends Construct {
+    constructor(scope: Construct, id: string, props?: EnvProps) {
+        super(scope, id);        
+        const peerCidrIp: string = app.node.tryGetContext('peerIp');
+        const keyName: string = app.node.tryGetContext('keyName');
+
+        new BaseInfraCDKStack(app, 'BaseInfraCDKStack', { });
+        new iamStack(app, 'iamStack', { });
+        new Ec2dbStack(app, 'Ec2dbStack', peerCidrIp, keyName, stackProps);
+        new S3Stack(app, 'S3Stack', stackProps);        
+    }
+}
 const app = new App();
-const peerCidrIp: string = app.node.tryGetContext('peerIp');
-const keyName: string = app.node.tryGetContext('keyName');
+
+new myApp(app, "myapp", { prod: true });
 
 /* if (peerCidrIp == null) {
     console.log('"peerIp" context key missing, using hard-coded cidr...')
@@ -24,14 +49,3 @@ if (keyName == null) {
     console.log('Default "keyName" is set to ' + keyName);
 }*/
 
-const stackProps = {
-    env: {
-        account: process.env.CDK_DEFAULT_ACCOUNT,
-        region: process.env.CDK_DEFAULT_REGION
-    }
-}
-
-new BaseInfraCDKStack(app, 'BaseInfraCDKStack', { });
-new iamStack(app, 'iamStack', { });
-new Ec2dbStack(app, 'Ec2dbStack', peerCidrIp, keyName, stackProps);
-new S3Stack(app, 'S3Stack', stackProps);
